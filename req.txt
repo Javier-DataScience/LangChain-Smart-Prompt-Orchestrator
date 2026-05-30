@@ -16,3 +16,5 @@ Without ipykernel, notebooks can sometimes fail to see your environment correctl
 
 pip install ipykernel
 pip install accelerate
+pip install transformers torch accelerate
+pip show transformers
