@@ -1,0 +1,18 @@
+pip install notebook
+pip install langchain
+pip install langchain-community
+pip install transformers
+pip install torch
+pip install sentencepiece
+
+pip install jupyterlab
+jupyter lab
+pip install ipykernel
+pip install ipykernel # This allows the environment to appear as a selectable kernel inside Jupyter/VS Code.
+
+python -m ipykernel install --user --name llm-env --display-name "Python (llm-env)" 
+Without ipykernel, notebooks can sometimes fail to see your environment correctly.
+
+
+pip install ipykernel
+pip install accelerate
