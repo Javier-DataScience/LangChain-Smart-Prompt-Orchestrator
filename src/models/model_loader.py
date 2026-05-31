@@ -2,41 +2,69 @@
 # FILE: model_loader.py
 # ----------------------------------------------------------
 # PURPOSE:
-# Centralize model loading for the entire application.
+# Load the HuggingFace model and tokenizer.
 #
 # WHY THIS EXISTS:
-# In the notebook, we loaded the Hugging Face model
-# multiple times in different cells.
+# We want a single place responsible for
+# loading AI models.
 #
-# In a real project, the model should be loaded in
-# one place only and reused everywhere else.
+# BENEFITS:
+# - Avoid duplicate model loading
+# - Centralize model initialization
+# - Make model upgrades easier
 #
-# RESPONSIBILITIES:
-# - Load tokenizer
-# - Load model
-# - Expose both objects to the application
+# ARCHITECTURE:
 #
-# THIS FILE DOES NOT:
-# - Create prompts
-# - Create chains
-# - Route requests
-# - Build APIs
+# settings.py
+#      ↓
+# model_loader.py
+#      ↓
+# chains/
+#
 # ==========================================================
 
-from transformers import AutoTokenizer
-from transformers import AutoModelForSeq2SeqLM
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSeq2SeqLM
+)
+
+from src.config.settings import MODEL_NAME
 
 
-MODEL_NAME = "google/flan-t5-small"
+# ==========================================================
+# LOAD MODEL CONFIGURATION
+# ==========================================================
 
 print(f"Loading model: {MODEL_NAME}")
+
+
+# ==========================================================
+# LOAD TOKENIZER
+# ----------------------------------------------------------
+# The tokenizer converts:
+#
+# Text
+#   ↓
+# Tokens
+#
+# which the model can understand.
+# ==========================================================
 
 tokenizer = AutoTokenizer.from_pretrained(
     MODEL_NAME
 )
 
+
+# ==========================================================
+# LOAD MODEL
+# ----------------------------------------------------------
+# The model performs inference and generates
+# responses based on prompts.
+# ==========================================================
+
 model = AutoModelForSeq2SeqLM.from_pretrained(
     MODEL_NAME
 )
+
 
 print("Model loaded successfully.")

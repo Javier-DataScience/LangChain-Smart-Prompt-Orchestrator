@@ -20,36 +20,65 @@
 # - Route requests
 # - Create UI
 # - Expose APIs
+#
+# ARCHITECTURE:
+#
+# Topic
+#   ↓
+# PromptTemplate
+#   ↓
+# Tokenizer
+#   ↓
+# Model
+#   ↓
+# Response
+#
 # ==========================================================
 
 from src.prompts.explain_prompt import explain_prompt
 from src.models.model_loader import tokenizer, model
+from src.config.settings import MAX_NEW_TOKENS
 
 
 def explain_chain(topic: str) -> str:
     """
     Executes:
-    Topic -> Prompt -> Model -> Response
+
+    Topic
+      ↓
+    Prompt
+      ↓
+    Model
+      ↓
+    Response
     """
 
-    # Build prompt
+    # ------------------------------------------------------
+    # Build prompt from template
+    # ------------------------------------------------------
     prompt_text = explain_prompt.format(
         topic=topic
     )
 
-    # Convert text to tokens
+    # ------------------------------------------------------
+    # Convert text into model tokens
+    # ------------------------------------------------------
     inputs = tokenizer(
         prompt_text,
         return_tensors="pt"
     )
 
-    # Generate response
+    # ------------------------------------------------------
+    # Generate model response
+    # ------------------------------------------------------
     outputs = model.generate(
         **inputs,
-        max_new_tokens=128
+        max_new_tokens=MAX_NEW_TOKENS
     )
 
-    # Convert tokens back to text
+    # ------------------------------------------------------
+    # Convert generated tokens back into text
+    # ------------------------------------------------------
     response = tokenizer.decode(
         outputs[0],
         skip_special_tokens=True
