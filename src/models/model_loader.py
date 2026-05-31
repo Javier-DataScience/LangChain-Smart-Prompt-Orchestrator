@@ -11,7 +11,7 @@
 # BENEFITS:
 # - Avoid duplicate model loading
 # - Centralize model initialization
-# - Make model upgrades easier
+# - Make model upgrades easier (via settings.py)
 #
 # ARCHITECTURE:
 #
@@ -20,6 +20,8 @@
 # model_loader.py
 #      ↓
 # chains/
+#      ↓
+# FastAPI (later layer)
 #
 # ==========================================================
 
@@ -32,39 +34,45 @@ from src.config.settings import MODEL_NAME
 
 
 # ==========================================================
-# LOAD MODEL CONFIGURATION
+# MODEL INITIALIZATION START
 # ==========================================================
 
+print("=" * 50)
 print(f"Loading model: {MODEL_NAME}")
+print("=" * 50)
 
 
 # ==========================================================
 # LOAD TOKENIZER
 # ----------------------------------------------------------
-# The tokenizer converts:
+# Converts raw text into tokens (numbers) that the model understands.
 #
-# Text
-#   ↓
-# Tokens
+# Example:
+# "machine learning"
+#        ↓
+# [2315, 98, 1200]
 #
-# which the model can understand.
+# This step is REQUIRED for HuggingFace models.
 # ==========================================================
 
-tokenizer = AutoTokenizer.from_pretrained(
-    MODEL_NAME
-)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
 
 # ==========================================================
 # LOAD MODEL
 # ----------------------------------------------------------
-# The model performs inference and generates
-# responses based on prompts.
+# The model performs inference:
+#
+# Tokens → Neural Network → Generated Tokens → Text
+#
+# This is the "brain" of the system.
 # ==========================================================
 
-model = AutoModelForSeq2SeqLM.from_pretrained(
-    MODEL_NAME
-)
+model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME)
 
 
-print("Model loaded successfully.")
+# ==========================================================
+# MODEL READY
+# ==========================================================
+
+print("Model loaded successfully ✔")

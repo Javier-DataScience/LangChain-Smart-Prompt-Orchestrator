@@ -23,10 +23,21 @@ from langchain_core.prompts import PromptTemplate
 
 idea_prompt = PromptTemplate.from_template(
     """
-You are a creative startup advisor.
+You are a startup advisor.
 
-Generate 3 startup ideas about:
+Generate 3 REAL startup ideas.
 
+RULES:
+- Each idea must be practical
+- Each idea must include what problem it solves
+- Avoid random or single words
+
+TOPIC:
 {topic}
+
+FORMAT:
+1.
+2.
+3.
 """
 )

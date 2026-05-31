@@ -2,21 +2,21 @@
 # FILE: settings.py
 # ----------------------------------------------------------
 # PURPOSE:
-# Central place for application configuration.
+# Central configuration for the entire system.
 #
 # WHY:
-# Avoid hardcoded values throughout the codebase.
-#
+# Keeps model settings, generation parameters,
+# and future environment variables in one place.
 # ==========================================================
 
-# ----------------------------------------------------------
-# HuggingFace Model Configuration
-# ----------------------------------------------------------
+# ==========================================================
+# MODEL CONFIGURATION
+# ==========================================================
 
-MODEL_NAME = "google/flan-t5-small"
+MODEL_NAME = "google/flan-t5-base"
 
-# ----------------------------------------------------------
-# Generation Configuration
-# ----------------------------------------------------------
+# ==========================================================
+# GENERATION CONFIGURATION
+# ==========================================================
 
 MAX_NEW_TOKENS = 128

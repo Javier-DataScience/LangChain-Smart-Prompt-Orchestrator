@@ -2,23 +2,10 @@
 # FILE: explain_prompt.py
 # ----------------------------------------------------------
 # PURPOSE:
-# Store the explanation prompt used by the application.
+# High-quality instruction prompt for explanation tasks.
 #
-# WHY THIS EXISTS:
-# In the notebook, prompts were defined directly inside
-# cells.
-#
-# In a real project, prompts are separated from chains,
-# routers, and model code.
-#
-# RESPONSIBILITIES:
-# - Define PromptTemplate
-# - Expose prompt object
-#
-# THIS FILE DOES NOT:
-# - Load models
-# - Run inference
-# - Route requests
+# WHY:
+# Small models need extremely explicit structure.
 # ==========================================================
 
 from langchain_core.prompts import PromptTemplate
@@ -26,11 +13,17 @@ from langchain_core.prompts import PromptTemplate
 
 explain_prompt = PromptTemplate.from_template(
     """
-You are a helpful teacher.
+You are an expert teacher.
 
-Explain the topic in a simple way for a beginner.
+Explain the topic in a very simple and clear way.
 
-Topic:
+RULES:
+- Use exactly 2 short sentences
+- First sentence: definition
+- Second sentence: real-world example
+- Do NOT repeat the topic word multiple times
+
+TOPIC:
 {topic}
 """
 )
