@@ -18,3 +18,4 @@ pip install ipykernel
 pip install accelerate
 pip install transformers torch accelerate
 pip show transformers
+pip install langchain langchain-core langchain-community
