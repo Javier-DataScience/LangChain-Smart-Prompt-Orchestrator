@@ -22,3 +22,5 @@ pip install langchain langchain-core langchain-community
 pip show langchain-community
 pip install fastapi uvicorn
 pip install streamlit
+pip install gradio
+pip show gradio

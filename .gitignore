@@ -4,3 +4,5 @@ __pycache__/
 .env
 __pycache__/
 *.pyc
+requirements_raw.txt
+req.txt

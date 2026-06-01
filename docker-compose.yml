@@ -1,0 +1,64 @@
+# ==========================================================
+# FILE: docker-compose.yml
+# ----------------------------------------------------------
+# PURPOSE:
+# Orchestrate the Smart Prompt Orchestrator services.
+#
+# SERVICES:
+#
+# 1. FastAPI Backend
+#    - Router
+#    - Chains
+#    - Hugging Face Model
+#
+# 2. Streamlit Frontend
+#    - ChatGPT-style UI
+#
+# NETWORK:
+#
+# Streamlit
+#     ↓
+# http://fastapi:8000
+#     ↓
+# FastAPI
+#
+# BENEFITS:
+# - Single startup command
+# - Reproducible environment
+# - Multi-container architecture
+# ==========================================================
+
+services:
+
+  fastapi:
+
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+
+    container_name: smart-prompt-fastapi
+
+    ports:
+      - "8000:8000"
+
+    restart: unless-stopped
+
+
+  streamlit:
+
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+
+    container_name: smart-prompt-streamlit
+
+    ports:
+      - "8501:8501"
+
+    environment:
+      - API_URL=http://fastapi:8000/route
+
+    depends_on:
+      - fastapi
+
+    restart: unless-stopped
