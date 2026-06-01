@@ -5,7 +5,6 @@
 #
 # - FastAPI backend
 # - Streamlit frontend
-# - Gradio frontend
 # - LangChain chains
 # - Hugging Face models
 # - Transformers inference
