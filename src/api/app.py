@@ -2,42 +2,32 @@
 # FILE: app.py
 # ----------------------------------------------------------
 # PURPOSE:
-# FastAPI application entry point.
+# FastAPI entry point for LangChain Smart Prompt Orchestrator
 #
 # WHY THIS EXISTS:
-# Expose our AI system through HTTP endpoints.
+# Exposes ML chains (explain, summarize, ideas) via HTTP API
+# and provides a unified routing endpoint for the UI.
 #
 # ARCHITECTURE:
 #
-# Client
-#    ↓
-# FastAPI
-#    ↓
-# Endpoint
-#    ↓
-# Chain
-#    ↓
-# Prompt
-#    ↓
-# Model
-#
+# Streamlit → FastAPI → Router → Chains → Model
 # ==========================================================
 
 from fastapi import FastAPI
+from pydantic import BaseModel
 
-from src.api.schemas import (
-    ExplainRequest,
-    SummarizeRequest,
-    IdeaRequest
-)
+from src.routers.rule_router import route_request
 
-from src.chains.explain_chain import explain_chain
-from src.chains.summarize_chain import summarize_chain
-from src.chains.idea_chain import idea_chain
+# ==========================================================
+# REQUEST SCHEMA
+# ==========================================================
+
+class PromptRequest(BaseModel):
+    text: str
 
 
 # ==========================================================
-# CREATE APPLICATION
+# CREATE FASTAPI APP
 # ==========================================================
 
 app = FastAPI(
@@ -48,80 +38,29 @@ app = FastAPI(
 
 
 # ==========================================================
-# HEALTH CHECK ENDPOINT
-# ----------------------------------------------------------
-# Used to verify the API is running.
+# HEALTH CHECK
 # ==========================================================
 
 @app.get("/")
 def root():
-
     return {
         "message": "API is running successfully"
     }
 
 
 # ==========================================================
-# EXPLAIN ENDPOINT
-# ----------------------------------------------------------
-# Example Request:
-#
-# {
-#     "topic": "machine learning"
-# }
+# MAIN ROUTE (USED BY STREAMLIT UI)
 # ==========================================================
 
-@app.post("/explain")
-def explain(request: ExplainRequest):
+@app.post("/route")
+def route_endpoint(request: PromptRequest):
+    """
+    Receives user input and routes it to the correct chain
+    using the smart router.
+    """
 
-    response = explain_chain(
-        request.topic
-    )
+    result = route_request(request.text)
 
     return {
-        "response": response
-    }
-
-
-# ==========================================================
-# SUMMARIZE ENDPOINT
-# ----------------------------------------------------------
-# Example Request:
-#
-# {
-#     "text": "Artificial intelligence is transforming industries."
-# }
-# ==========================================================
-
-@app.post("/summarize")
-def summarize(request: SummarizeRequest):
-
-    response = summarize_chain(
-        request.text
-    )
-
-    return {
-        "response": response
-    }
-
-
-# ==========================================================
-# IDEAS ENDPOINT
-# ----------------------------------------------------------
-# Example Request:
-#
-# {
-#     "topic": "fitness"
-# }
-# ==========================================================
-
-@app.post("/ideas")
-def ideas(request: IdeaRequest):
-
-    response = idea_chain(
-        request.topic
-    )
-
-    return {
-        "response": response
+        "response": result
     }

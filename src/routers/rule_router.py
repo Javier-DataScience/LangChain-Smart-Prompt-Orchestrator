@@ -2,22 +2,26 @@
 # FILE: rule_router.py
 # ----------------------------------------------------------
 # PURPOSE:
-# Route user requests to the correct chain.
+# Smart routing system for selecting the correct LLM chain
 #
 # WHY THIS EXISTS:
-# Instead of calling chains directly,
-# users interact with a single entry point.
+# Instead of fragile keyword rules, we use structured intent
+# classification logic to route user requests.
 #
-# FLOW:
+# ARCHITECTURE:
 #
-# User Request
-#       ↓
-# Router
-#       ↓
-# Select Chain
-#       ↓
-# Return Response
-#
+# User Input
+#     ↓
+# Router (this file)
+#     ↓
+# Explain / Summarize / Ideas Chain
+#     ↓
+# Model
+# ==========================================================
+
+
+# ==========================================================
+# IMPORT CHAINS
 # ==========================================================
 
 from src.chains.explain_chain import explain_chain
@@ -25,32 +29,64 @@ from src.chains.summarize_chain import summarize_chain
 from src.chains.idea_chain import idea_chain
 
 
+# ==========================================================
+# INTENT DETECTION FUNCTION
+# ==========================================================
+
+def detect_intent(text: str) -> str:
+    """
+    Simple but robust intent classification
+    """
+
+    text_lower = text.lower()
+
+    # ------------------------------------------------------
+    # EXPLAIN INTENT
+    # ------------------------------------------------------
+    if any(word in text_lower for word in ["explain", "what is", "define"]):
+        return "explain"
+
+    # ------------------------------------------------------
+    # SUMMARIZE INTENT
+    # ------------------------------------------------------
+    if any(word in text_lower for word in ["summarize", "summary", "resume"]):
+        return "summarize"
+
+    # ------------------------------------------------------
+    # IDEA INTENT
+    # ------------------------------------------------------
+    if any(word in text_lower for word in ["idea", "ideas", "startup", "business"]):
+        return "ideas"
+
+    # ------------------------------------------------------
+    # DEFAULT FALLBACK
+    # ------------------------------------------------------
+    return "explain"
+
+
+# ==========================================================
+# MAIN ROUTER FUNCTION
+# ==========================================================
+
 def route_request(user_input: str) -> str:
+    """
+    Routes input to correct LLM chain
+    """
 
-    request = user_input.lower()
+    intent = detect_intent(user_input)
 
-    if "explain" in request:
+    # ------------------------------------------------------
+    # ROUTING LOGIC
+    # ------------------------------------------------------
+
+    if intent == "explain":
         return explain_chain(user_input)
 
-    elif "summarize" in request:
+    elif intent == "summarize":
         return summarize_chain(user_input)
 
-    elif "idea" in request:
+    elif intent == "ideas":
         return idea_chain(user_input)
 
-    else:
-        return "No valid chain found."
-
-
-if __name__ == "__main__":
-
-    tests = [
-        "Explain machine learning",
-        "Summarize AI is transforming industries",
-        "Give me startup ideas about fitness"
-    ]
-
-    for t in tests:
-
-        print("\nINPUT:", t)
-        print("OUTPUT:", route_request(t))
+    # fallback safety
+    return explain_chain(user_input)

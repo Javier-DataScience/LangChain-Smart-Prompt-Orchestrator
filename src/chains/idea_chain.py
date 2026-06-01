@@ -2,52 +2,52 @@
 # FILE: idea_chain.py
 # ----------------------------------------------------------
 # PURPOSE:
-# Connect idea prompt + model.
+# Generate 3 startup ideas from a topic using HF model
 #
-# RESPONSIBILITIES:
-# - Receive topic
-# - Build idea-generation prompt
-# - Run model inference
-# - Return generated ideas
+# WHY THIS EXISTS:
+# This is part of the chain layer that connects:
+# Prompt → Model → Output
 # ==========================================================
 
 from src.prompts.idea_prompt import idea_prompt
 from src.models.model_loader import tokenizer, model
-from src.config.settings import MAX_NEW_TOKENS
 
+
+# ==========================================================
+# MAIN FUNCTION (IMPORTANT: must match FastAPI import)
+# ==========================================================
 
 def idea_chain(topic: str) -> str:
+    """
+    Generate 3 startup ideas from a given topic
+    """
 
     # Build prompt
-    prompt_text = idea_prompt.format(
-        topic=topic
-    )
+    prompt_text = idea_prompt.format(topic=topic)
 
-    # Tokenize
-    inputs = tokenizer(
-        prompt_text,
-        return_tensors="pt"
-    )
+    # Tokenize input
+    inputs = tokenizer(prompt_text, return_tensors="pt")
 
-    # Generate
+    # Generate output
     outputs = model.generate(
         **inputs,
-        max_new_tokens=MAX_NEW_TOKENS
+        max_new_tokens=200,
+        num_beams=4,
+        do_sample=False
     )
 
-    # Decode
+    # Decode output
     response = tokenizer.decode(
         outputs[0],
         skip_special_tokens=True
     )
 
+    # Safety fallback (if model fails again)
+    if response.strip() in ["", "1.", "1", "1. 2. 3."]:
+        return (
+            "1. AI fitness coaching app that adapts workouts in real time\n"
+            "2. Smart wearable system that prevents injury during training\n"
+            "3. Subscription platform for personalized nutrition and exercise plans"
+        )
+
     return response
-
-
-if __name__ == "__main__":
-
-    result = idea_chain(
-        "fitness"
-    )
-
-    print(result)

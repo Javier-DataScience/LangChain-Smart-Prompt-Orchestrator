@@ -2,40 +2,35 @@
 # FILE: idea_prompt.py
 # ----------------------------------------------------------
 # PURPOSE:
-# Store the prompt used for idea generation.
+# Generates 3 simple startup ideas based on a given topic.
 #
 # WHY THIS EXISTS:
-# Idea generation is different from explanation
-# and summarization.
+# Provides structured creativity generation for business ideas
+# in a predictable and readable format.
 #
-# RESPONSIBILITIES:
-# - Define PromptTemplate
-# - Expose idea_prompt object
-#
-# THIS FILE DOES NOT:
-# - Load models
-# - Run inference
-# - Route requests
+# DESIGN PRINCIPLE:
+# - Ensure creativity without over-constraining the model
+# - Avoid empty outputs or instruction repetition
+# - Keep output simple and stable for FLAN-T5-base
 # ==========================================================
 
 from langchain_core.prompts import PromptTemplate
 
 
 idea_prompt = PromptTemplate.from_template(
-    """
-You are a startup advisor.
+"""
+You are a creative startup advisor.
 
-Generate 3 REAL startup ideas.
+Generate 3 simple and practical startup ideas based on the topic.
 
-RULES:
-- Each idea must be practical
-- Each idea must include what problem it solves
-- Avoid random or single words
+Rules:
+- Each idea must be one complete sentence
+- Ideas must be realistic and useful
+- Do not repeat instructions in your answer
 
-TOPIC:
-{topic}
+Topic: {topic}
 
-FORMAT:
+Ideas:
 1.
 2.
 3.
