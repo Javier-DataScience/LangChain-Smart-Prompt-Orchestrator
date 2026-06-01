@@ -2,24 +2,19 @@
 # FILE: streamlit_app.py
 # ----------------------------------------------------------
 # PURPOSE:
-# ChatGPT-like UI for LangChain Smart Prompt Orchestrator
+# ChatGPT-like UI for LLM Orchestrator with polished UX
 #
-# WHY THIS EXISTS:
-# Provides a clean chat interface over FastAPI backend
-#
-# KEY FIXES:
-# - Prevent duplicate rendering
-# - Maintain chat history properly
-# - Separate logic from UI rendering
+# FEATURES:
+# - ChatGPT-style message bubbles
+# - Typing effect simulation
+# - Clean state handling
+# - Stable rendering (no duplication)
 # ==========================================================
 
 import streamlit as st
 import requests
+import time
 
-
-# ==========================================================
-# CONFIGURATION
-# ==========================================================
 
 API_URL = "http://127.0.0.1:8000/route"
 
@@ -29,64 +24,66 @@ st.set_page_config(
     layout="centered"
 )
 
-
-# ==========================================================
-# SESSION STATE (CHAT MEMORY)
-# ==========================================================
-
+# --------------------------
+# SESSION STATE
+# --------------------------
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-
-# ==========================================================
+# --------------------------
 # HEADER
-# ==========================================================
-
+# --------------------------
 st.title("🧠 Smart Prompt Orchestrator")
-st.caption("Chat with your LLM system")
+st.caption("ChatGPT-style LLM orchestration system")
 
-
-# ==========================================================
-# DISPLAY CHAT HISTORY (ONLY ONCE)
-# ==========================================================
-
+# --------------------------
+# RENDER CHAT HISTORY
+# --------------------------
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
-        st.write(msg["content"])
+        st.markdown(msg["content"])
 
-
-# ==========================================================
+# --------------------------
 # USER INPUT
-# ==========================================================
-
+# --------------------------
 user_input = st.chat_input("Ask something...")
 
 if user_input:
 
-    # 1. Store user message
+    # Store user message
     st.session_state.messages.append({
         "role": "user",
         "content": user_input
     })
 
-    # 2. Call backend API
+    with st.chat_message("user"):
+        st.markdown(user_input)
+
+    # Call backend
     response = requests.post(
         API_URL,
         json={"text": user_input}
     )
 
-    # 3. Parse response safely
     if response.status_code == 200:
-        data = response.json()
-        assistant_response = data.get("response", "No response returned")
+        assistant_response = response.json().get("response", "")
     else:
-        assistant_response = f"Error: {response.status_code}"
+        assistant_response = "Error contacting model."
 
-    # 4. Store assistant message
+    # --------------------------
+    # Typing effect simulation
+    # --------------------------
+    with st.chat_message("assistant"):
+        placeholder = st.empty()
+        typed_text = ""
+
+        for char in assistant_response:
+            typed_text += char
+            placeholder.markdown(typed_text)
+            time.sleep(0.01)
+
+    # Store assistant message
     st.session_state.messages.append({
         "role": "assistant",
         "content": assistant_response
     })
-
-    # 5. Rerun to refresh UI properly
-    st.rerun()
