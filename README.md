@@ -23,9 +23,9 @@ This project demonstrates how to design a **multi-chain AI system** that routes 
 
 
 <p align="center">
-  <img src="./streamlit.png" width="420"/>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./gradio.png" width="420"/>
+  <img src="./streamlit.png" width="500"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="./gradio.png" width="500"/>
 </p>
 
 
