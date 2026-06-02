@@ -2,30 +2,32 @@
 # FILE: docker-compose.yml
 # ----------------------------------------------------------
 # PURPOSE:
-# Orchestrate the Smart Prompt Orchestrator services.
+# This file orchestrates the Smart Prompt Orchestrator system
+# using Docker Compose.
 #
-# SERVICES:
+# It runs two services:
 #
 # 1. FastAPI Backend
-#    - Router
-#    - Chains
-#    - Hugging Face Model
+#    - Handles routing logic
+#    - Executes LangChain chains
+#    - Loads Hugging Face transformer model
 #
 # 2. Streamlit Frontend
-#    - ChatGPT-style UI
+#    - Provides ChatGPT-like UI
+#    - Communicates with FastAPI backend
 #
-# NETWORK:
+# ARCHITECTURE FLOW:
 #
-# Streamlit
-#     ↓
-# http://fastapi:8000
-#     ↓
-# FastAPI
+# Streamlit (UI)
+#       ↓ HTTP request
+# FastAPI (API + Chains + Model)
+#       ↓
+# Hugging Face Transformers
 #
-# BENEFITS:
-# - Single startup command
-# - Reproducible environment
-# - Multi-container architecture
+# KEY FEATURE:
+# - Shared Hugging Face cache volume to avoid re-downloading models
+# - Ensures faster and stable container startup
+#
 # ==========================================================
 
 services:
@@ -40,6 +42,12 @@ services:
 
     ports:
       - "8000:8000"
+
+    # IMPORTANT FIX:
+    # Share local Hugging Face cache with container
+    # This avoids re-downloading the model inside Docker
+    volumes:
+      - C:/Users/User/.cache/huggingface:/root/.cache/huggingface
 
     restart: unless-stopped
 
@@ -56,6 +64,7 @@ services:
       - "8501:8501"
 
     environment:
+      # Streamlit frontend calls FastAPI service
       - API_URL=http://fastapi:8000/route
 
     depends_on:
